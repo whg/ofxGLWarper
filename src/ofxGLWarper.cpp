@@ -59,6 +59,11 @@ void ofxGLWarper::setup(int _x, int _y, int _w, int _h){
 bool ofxGLWarper::isActive(){
 	return active;
 }
+
+void ofxGLWarper::setActive(bool b) {
+    if (b) activate();
+    else deactivate();
+}
 //--------------------------------------------------------------
 void ofxGLWarper::activate(){
 	ofRegisterMouseEvents(this);
