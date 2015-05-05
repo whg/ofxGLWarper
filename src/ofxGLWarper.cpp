@@ -242,92 +242,87 @@ void ofxGLWarper::end(){
 }
 //--------------------------------------------------------------
 void ofxGLWarper::save(string saveFile){
-	ofxXmlSettings XML;
-	saveToXml(XML);
-    /*
-    XML.clear();
-	XML.addTag("corners");
-	XML.pushTag("corners");
-	
-	
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.setValue("corner:x",corners[i].x, t);
-		XML.setValue("corner:y",corners[i].y, t);
-	}
-    //*/
-	XML.saveFile(saveFile);
+
+
+    ofXml xml;
+    saveToXml(xml);
+    xml.save(saveFile);
+    ofLogNotice() << "saved ofGLWarper to " << saveFile;
+
+//	ofxXmlSettings XML;
+//	saveToXml(XML);
+//    /*
+//    XML.clear();
+//	XML.addTag("corners");
+//	XML.pushTag("corners");
+//	
+//	
+//	for(int i =0; i<4; i++){
+//		int t = XML.addTag("corner");
+//		XML.setValue("corner:x",corners[i].x, t);
+//		XML.setValue("corner:y",corners[i].y, t);
+//	}
+//    //*/
+//	XML.saveFile(saveFile);
 }
-//--------------------------------------------------------------
-void ofxGLWarper::saveToXml(ofxXmlSettings &XML){
-	XML.clear();
-	XML.addTag("corners");
-	XML.pushTag("corners");
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.setValue("corner:x",corners[i].x, t);
-		XML.setValue("corner:y",corners[i].y, t);
-	}
-	XML.popTag();
-}
-//--------------------------------------------------------------
-void ofxGLWarper::load(string loadFile){
-	ofxXmlSettings XML;
-	if( !XML.loadFile(loadFile) ){
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : xml file not loaded. Check file path.");
-        return;
-	}
-    loadFromXml(XML);
-	/*
-	if(!XML.tagExists("corners")){
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found");
-		return;
-	}
-	XML.pushTag("corners");
-	if (XML.getNumTags("corner")<4 ) {
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found");
-		return;	
-	}
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.pushTag("corner", i);
-		if (XML.tagExists("x") && XML.tagExists("y")){
-			corners[i].x = XML.getValue("x", double(1.0));
-			corners[i].y = XML.getValue("y", double(1.0));
-		}
-		XML.popTag();
-	}
-	
-	processMatrices();
-	ofLog(OF_LOG_WARNING, "ofxGLWarper : xml file loaded OK!.");
-	//*/
+
+void ofxGLWarper::saveToXml(ofXml &xml) {
+    xml.clear();
+    
+    xml.addChild("corners");
+    xml.setTo("corners");
+    
+    for (int i = 0; i < 4; i++) {
+        ofXml point;
+        point.addChild("point");
+        point.setTo("point");
+        point.addValue("x", corners[i].x);
+        point.addValue("y", corners[i].y);
+        xml.addXml(point);
+    }
 }
 
 //--------------------------------------------------------------
-void ofxGLWarper::loadFromXml(ofxXmlSettings &XML){	
-	if(!XML.tagExists("corners")){
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found");
-		return;
-	}
-	XML.pushTag("corners");
-	if (XML.getNumTags("corner")<4 ) {
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found");
-		return;
-	}
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.pushTag("corner", i);
-		if (XML.tagExists("x") && XML.tagExists("y")){
-			corners[i].x = XML.getValue("x", double(1.0));
-			corners[i].y = XML.getValue("y", double(1.0));
-		}
-		XML.popTag();
-	}
-	XML.popTag();
-	processMatrices();
-	ofLog(OF_LOG_WARNING, "ofxGLWarper : xml object loaded OK!.");
-	
+void ofxGLWarper::load(string loadFile){
+
+    ofXml xml;
+    bool loaded = xml.load(loadFile);
+    if (loaded) {
+        loadFromXml(xml);
+    }
+    else {
+        ofLogError() << "can't open " << loadFile;
+    }
 }
+
+void ofxGLWarper::loadFromXml(ofXml &xml) {
+    
+    
+    if (xml.setTo("corners")) {
+        if (xml.getNumChildren() < 4) {
+            ofLogError() << "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found";
+            return;
+        }
+        else {
+            // all ok, let's load
+            for (int i = 0; i < 4; i++) {
+                xml.setTo("//corners");
+                xml.setToChild(i);
+                corners[i].x = xml.getFloatValue("x");
+                corners[i].y = xml.getFloatValue("y");
+            }
+            
+            processMatrices();
+            
+            ofLogNotice() << "ofxGLWarper : xml object loaded OK!";
+        }
+    }
+    else {
+        ofLogError() << "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found";
+    }
+}
+
+
 //--------------------------------------------------------------
 void ofxGLWarper::mouseDragged(ofMouseEventArgs &args){
 

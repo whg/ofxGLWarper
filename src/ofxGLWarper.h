@@ -4,7 +4,6 @@
 #define OF_ADDON_USING_OFOPENCV
 
 #include "ofMain.h"
-#include "ofxXmlSettings.h"
 // ofxGLWarper by Roy Macdonald
 // ... / ... 
 //
@@ -46,9 +45,9 @@ public:
 	void save(string saveFile = "warpConfig.xml");
 	void load(string loadFile = "warpConfig.xml");
 	
-	void saveToXml(ofxXmlSettings& XML);
-	void loadFromXml(ofxXmlSettings& XML);
-	
+    void saveToXml(ofXml &xml);
+    void loadFromXml(ofXml &xml);
+    	
     void setActive(bool a);
     void toogleActive();
 	void activate();
