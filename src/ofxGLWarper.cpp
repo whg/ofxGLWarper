@@ -350,10 +350,8 @@ void ofxGLWarper::mousePressed(ofMouseEventArgs &args){
 	for(int i = 0; i < 4; i++){
 		float distx = corners[i].x - (float)args.x;
 		float disty = corners[i].y - (float)args.y;
-//      float distx = corners[i].x - (float)args.x/width;
-//		float disty = corners[i].y - (float)args.y/height;
 		float dist  = sqrt( distx * distx + disty * disty);
-		cout << "mouse to corner dist: " << dist << endl;
+
 		if(dist < smallestDist && dist < sensFactor ){
 			whichCorner = i;
 			smallestDist = dist;
