@@ -30,7 +30,7 @@ public:
 	void setup(int _resX, int _resY); //changed to have resolution as parameter for the quad
 	void setup(int _x, int _y, int _w, int _h);
 	void draw();	// nowthis method draw the bounding box for the warped elements. intended to be a visual aid.
-	void begin();	//changed name from draw to begin
+	void begin(bool calibrated=true);	//changed name from draw to begin
 	void end();		//added to make it easier to use, similar to ofFbo (begin,end)
 		
 	void mouseDragged(ofMouseEventArgs &args);
@@ -81,6 +81,8 @@ private:
     float cornerSensibility;
     bool cornerSelected;
     bool bUseKeys;
+    
+    bool calibrated;
 };
 
 #endif	

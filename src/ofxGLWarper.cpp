@@ -127,22 +127,22 @@ void ofxGLWarper::processMatrices(){
 	
 	//we set the warp coordinates
 	//source coordinates as the dimensions of our window
-	cvsrc[0].x = x;
-	cvsrc[0].y = y;
-	cvsrc[1].x = x+width;
-	cvsrc[1].y = y;
-	cvsrc[2].x = x+width;
-	cvsrc[2].y = y+height;
-	cvsrc[3].x = x;
-	cvsrc[3].y = y+height;			
+	cvdst[0].x = x;
+	cvdst[0].y = y;
+	cvdst[1].x = x+width;
+	cvdst[1].y = y;
+	cvdst[2].x = x+width;
+	cvdst[2].y = y+height;
+	cvdst[3].x = x;
+	cvdst[3].y = y+height;
 	
 	//corners are in 0.0 - 1.0 range
 	//so we scale up so that they are at the window's scale
 	for(int i = 0; i < 4; i++){
 		//cvdst[i].x = corners[i].x  * (float)width;
 		//cvdst[i].y = corners[i].y * (float)height;
-        cvdst[i].x = corners[i].x;
-		cvdst[i].y = corners[i].y;
+        cvsrc[i].x = corners[i].x;
+		cvsrc[i].y = corners[i].y;
 	}
 	
 	//we create a matrix that will store the results
@@ -211,21 +211,27 @@ void ofxGLWarper::draw(){
 		ofPushStyle();
 		ofSetColor(255, 255, 255);
 		ofNoFill();
-		ofRect(x, y, width, height);
+		ofDrawRectangle(x, y, width, height);
 		ofPopStyle();
 	}
 }
 //--------------------------------------------------------------
-void ofxGLWarper::begin(){
+void ofxGLWarper::begin(bool calibrated){
 	if (active) {
 		processMatrices();
 	}
-	glPushMatrix();
-	glMultMatrixf(myMatrix);
+    this->calibrated = calibrated;
+	
+    if (calibrated) {
+        glPushMatrix();
+        glMultMatrixf(myMatrix);
+    }
 }
 //--------------------------------------------------------------
 void ofxGLWarper::end(){
-	glPopMatrix();
+	
+    if (calibrated) glPopMatrix();
+    
     if (active) {// this draws colored squares over the corners as a visual aid. 
         ofPushStyle();
         ofSetRectMode(OF_RECTMODE_CENTER);
@@ -235,7 +241,7 @@ void ofxGLWarper::end(){
             }else{
                 ofSetColor(255, 255, 0);
             }
-            ofRect(corners[i], 10, 10);
+            ofDrawRectangle(corners[i], 10, 10);
         }
         ofPopStyle();
     }
