@@ -409,10 +409,10 @@ ofVec4f ofxGLWarper::fromScreenToWarpCoord(float x, float y, float z){
 	mousePoint.w = 1.0;
 	
 	// i create a ofMatrix4x4 with the ofxGLWarper myMatrixData in column order
-	ofMatrix4x4 myOFmatrix = ofMatrix4x4(myMatrix[0], myMatrix[4],myMatrix[8],myMatrix[12],
+	ofMatrix4x4 myOFmatrix = ofMatrix4x4(myMatrix[0], myMatrix[4],myMatrix[8], myMatrix[12],
 										 myMatrix[1], myMatrix[5],myMatrix[9], myMatrix[13],
 										 myMatrix[2], myMatrix[6],myMatrix[10],myMatrix[14],
-										 myMatrix[3],myMatrix[7],myMatrix[11],myMatrix[15]);
+										 myMatrix[3], myMatrix[7],myMatrix[11],myMatrix[15]);
 	// do not invert the matrix 
 	ofMatrix4x4 invertedMyMatrix = myOFmatrix.getInverse();	
 	//ofMatrix4x4 invertedMyMatrix = myOFmatrix;
@@ -425,8 +425,42 @@ ofVec4f ofxGLWarper::fromScreenToWarpCoord(float x, float y, float z){
 	warpedPoint.y = warpedPoint.y / warpedPoint.w;
 	warpedPoint.z = warpedPoint.z / warpedPoint.w;
 	
-	return warpedPoint;
+//	return warpedPoint;
+    
+    float matrix[9];
+    matrix[0] = myMatrix[0];
+    matrix[1] = myMatrix[4];
+    matrix[2] = myMatrix[12];
+                         
+    matrix[3] = myMatrix[1];
+    matrix[4] = myMatrix[5];
+    matrix[5] = myMatrix[13];
+
+    matrix[6] = myMatrix[3];
+    matrix[7] = myMatrix[7];
+    matrix[8] = myMatrix[15];
+    
+    ofMatrix3x3 ofMatrix(matrix[0], matrix[1], matrix[2],
+                         matrix[3], matrix[4], matrix[7],
+                         matrix[6], matrix[7], matrix[8]);
+    
+//    ofVec3f p(x, y, 1.0);
+
+    ofMatrix.invert();
+    
+//    ofVec3f p2(x * ofMatrix[0] + y * ofMatrix[3] + ofMatrix[6],
+//               x * ofMatrix[1] + y * ofMatrix[4] + ofMatrix[7],
+//               x * ofMatrix[2] + y * ofMatrix[5] + ofMatrix[8]);
+    
+    ofVec3f p2(x * ofMatrix[0] + y * ofMatrix[1] + ofMatrix[2],
+               x * ofMatrix[3] + y * ofMatrix[4] + ofMatrix[5],
+               x * ofMatrix[6] + y * ofMatrix[7] + ofMatrix[8]);
+//
+    
+    return ofVec4f(p2.x / p2.z, p2.y / p2.z, 0.0, 0.0);
+    
 }
+
 //--------------------------------------------------------------
 ofVec4f ofxGLWarper::fromWarpToScreenCoord(float x, float y, float z){
 	ofVec4f mousePoint;
